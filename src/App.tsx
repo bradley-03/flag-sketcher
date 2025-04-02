@@ -1,5 +1,5 @@
-import "./App.css"
 import countryData from "../data/countryData.json"
+import Canvas from "./components/Canvas"
 import { useState } from "react"
 
 function getRandomCountryIndex(): number {
@@ -24,6 +24,7 @@ function App() {
         </h1>
         <img src={country.flags.png} alt={country.flags.alt} />
       </div>
+      <Canvas key={randomCountryIndex} />
     </>
   )
 }
