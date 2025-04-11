@@ -19,7 +19,7 @@ function App() {
     <>
       <button onClick={rollNewCountry}>New Country</button>
       <div>
-        <h1>
+        <h1 className="text-red-500">
           {country.name.common} {country.flag}
         </h1>
         <img src={country.flags.png} alt={country.flags.alt} />
