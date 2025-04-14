@@ -1,65 +1,79 @@
-import { ReactSketchCanvas, type ReactSketchCanvasRef } from "react-sketch-canvas"
-import { ChangeEvent, useRef, useState } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 
 export default function Canvas() {
-  const canvasRef = useRef<ReactSketchCanvasRef>(null)
-  const [eraseMode, setEraseMode] = useState<boolean>(false)
-  const [strokeColor, setStrokeColor] = useState<string>("black")
-  const [strokeWidth, setStrokeWidth] = useState<number>(3)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const contextRef = useRef<CanvasRenderingContext2D | null>(null)
+  const [isDrawing, setIsDrawing] = useState<boolean>(false)
+  const [lineWidth, setLineWidth] = useState<number>(3)
+  const [color, setColor] = useState<string>("#000000")
+  const [currentTool, setCurrentTool] = useState<string>("pen")
 
-  const handleEraserClick = () => {
-    setEraseMode(true)
-    canvasRef.current?.eraseMode(true)
+  function startDrawing(event: React.MouseEvent<HTMLCanvasElement>) {
+    if (contextRef.current) {
+      setIsDrawing(true)
+      contextRef.current.beginPath()
+      contextRef.current.lineWidth = lineWidth
+      contextRef.current.lineCap = "round"
+      contextRef.current.lineJoin = "round"
+      contextRef.current.strokeStyle = color
+      contextRef.current.moveTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
+      contextRef.current.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
+      contextRef.current.stroke()
+    }
   }
 
-  const handlePenClick = () => {
-    setEraseMode(false)
-    canvasRef.current?.eraseMode(false)
+  function stopDrawing() {
+    setIsDrawing(false)
+    contextRef.current?.closePath()
   }
 
-  function updateStrokeColor(event: ChangeEvent<HTMLInputElement>) {
-    setStrokeColor(event.target.value)
+  function draw(event: React.MouseEvent<HTMLCanvasElement>) {
+    if (!contextRef.current || !isDrawing) return
+    contextRef.current.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
+    contextRef.current?.stroke()
   }
 
-  function handleUndoClick() {
-    canvasRef.current?.undo()
+  function setPenTool() {
+    contextRef.current!.globalCompositeOperation = "source-over"
+    setCurrentTool("pen")
   }
 
-  function handleRedoClick() {
-    canvasRef.current?.redo()
+  function setEraserTool() {
+    contextRef.current!.globalCompositeOperation = "destination-out"
+    setCurrentTool("eraser")
   }
 
-  function handleClearClick() {
-    canvasRef.current?.resetCanvas()
-  }
-
-  function handleStrokeWidthChange(event: ChangeEvent<HTMLInputElement>) {
-    setStrokeWidth(+event.target.value)
-  }
+  useLayoutEffect(() => {
+    const ctx = canvasRef.current?.getContext("2d")
+    if (ctx) {
+      contextRef.current = ctx
+    }
+  })
 
   return (
     <div>
-      <input type="color" onChange={updateStrokeColor} />
-      <button onClick={handlePenClick} disabled={!eraseMode}>
+      <canvas
+        ref={canvasRef}
+        className="bg-white cursor-crosshair rounded shadow border-1 border-neutral-300"
+        onMouseDown={e => {
+          startDrawing(e)
+        }}
+        onMouseUp={stopDrawing}
+        onMouseLeave={stopDrawing}
+        onMouseMove={e => {
+          draw(e)
+        }}
+        height={500}
+        width={500}
+      ></canvas>
+      <button disabled={currentTool === "pen"} onClick={setPenTool}>
         Pen
       </button>
-      <button onClick={handleEraserClick} disabled={eraseMode}>
+      <button disabled={currentTool === "eraser"} onClick={setEraserTool}>
         Eraser
       </button>
-      <input type="range" onChange={handleStrokeWidthChange} value={strokeWidth} min={1} max={100} />
-      <button onClick={handleUndoClick}>Undo</button>
-      <button onClick={handleRedoClick}>Redo</button>
-      <button onClick={handleClearClick}>Clear</button>
-
-      <ReactSketchCanvas
-        ref={canvasRef}
-        strokeColor={strokeColor}
-        canvasColor="white"
-        strokeWidth={strokeWidth}
-        eraserWidth={30}
-        height="250px"
-        width="25%"
-      />
+      <input type="range" min="1" max="40" value={lineWidth} onChange={e => setLineWidth(Number(e.target.value))} />
+      <input type="color" onChange={e => setColor(e.target.value)} />
     </div>
   )
 }

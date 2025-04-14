@@ -1,6 +1,6 @@
 import countryData from "../data/countryData.json"
-import Canvas from "./components/Canvas"
 import { useState } from "react"
+import Canvas from "./components/Canvas"
 
 function getRandomCountryIndex(): number {
   return Math.floor(Math.random() * countryData.length)
@@ -17,14 +17,16 @@ function App() {
 
   return (
     <>
-      <button onClick={rollNewCountry}>New Country</button>
-      <div>
+      {/* <button onClick={rollNewCountry}>New Country</button> */}
+      {/* <div>
         <h1 className="text-red-500">
           {country.name.common} {country.flag}
         </h1>
         <img src={country.flags.png} alt={country.flags.alt} />
+      </div> */}
+      <div className="flex w-full h-screen justify-center items-center">
+        <Canvas />
       </div>
-      <Canvas key={randomCountryIndex} />
     </>
   )
 }
