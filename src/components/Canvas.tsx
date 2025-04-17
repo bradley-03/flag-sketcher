@@ -1,25 +1,64 @@
-import { useLayoutEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 export default function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const contextRef = useRef<CanvasRenderingContext2D | null>(null)
-  const [isDrawing, setIsDrawing] = useState<boolean>(false)
-  const [lineWidth, setLineWidth] = useState<number>(3)
-  const [color, setColor] = useState<string>("#000000")
-  const [currentTool, setCurrentTool] = useState<string>("pen")
+  const [isDrawing, setIsDrawing] = useState(false)
+  const [lineWidth, setLineWidth] = useState(3)
+  const [color, setColor] = useState("#000000")
+  const [currentTool, setCurrentTool] = useState("pen")
+
+  const resizeCanvas = () => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const parent = canvas.parentElement
+    if (!parent) return
+
+    const dpr = window.devicePixelRatio || 1
+    const width = parent.clientWidth
+    const aspectRatio = 3 / 2
+    const height = width / aspectRatio
+
+    const ctx = canvas.getContext("2d")
+    const image = ctx?.getImageData(0, 0, canvas.width, canvas.height)
+
+    canvas.width = width * dpr
+    canvas.height = height * dpr
+    canvas.style.width = `${width}px`
+    canvas.style.height = `${height}px`
+
+    const scaledCtx = canvas.getContext("2d")
+    if (scaledCtx) {
+      scaledCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      contextRef.current = scaledCtx
+    }
+
+    // Restore content (basic version, does not scale image)
+    if (image) {
+      scaledCtx?.putImageData(image, 0, 0)
+    }
+  }
+
+  useEffect(() => {
+    resizeCanvas()
+    window.addEventListener("resize", resizeCanvas)
+    return () => window.removeEventListener("resize", resizeCanvas)
+  }, [])
 
   function startDrawing(event: React.MouseEvent<HTMLCanvasElement>) {
-    if (contextRef.current) {
-      setIsDrawing(true)
-      contextRef.current.beginPath()
-      contextRef.current.lineWidth = lineWidth
-      contextRef.current.lineCap = "round"
-      contextRef.current.lineJoin = "round"
-      contextRef.current.strokeStyle = color
-      contextRef.current.moveTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
-      contextRef.current.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
-      contextRef.current.stroke()
-    }
+    const ctx = contextRef.current
+    if (!ctx) return
+
+    setIsDrawing(true)
+    ctx.beginPath()
+    ctx.lineWidth = lineWidth
+    ctx.lineCap = "round"
+    ctx.lineJoin = "round"
+    ctx.strokeStyle = color
+    ctx.moveTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
+    ctx.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
+    ctx.stroke()
   }
 
   function stopDrawing() {
@@ -28,9 +67,9 @@ export default function Canvas() {
   }
 
   function draw(event: React.MouseEvent<HTMLCanvasElement>) {
-    if (!contextRef.current || !isDrawing) return
+    if (!isDrawing || !contextRef.current) return
     contextRef.current.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
-    contextRef.current?.stroke()
+    contextRef.current.stroke()
   }
 
   function setPenTool() {
@@ -43,37 +82,26 @@ export default function Canvas() {
     setCurrentTool("eraser")
   }
 
-  useLayoutEffect(() => {
-    const ctx = canvasRef.current?.getContext("2d")
-    if (ctx) {
-      contextRef.current = ctx
-    }
-  })
-
   return (
-    <div>
+    <div className="w-full max-w-3xl mx-auto">
       <canvas
         ref={canvasRef}
-        className="bg-white cursor-crosshair rounded shadow border-1 border-neutral-300"
-        onMouseDown={e => {
-          startDrawing(e)
-        }}
+        className="bg-white cursor-crosshair rounded shadow border border-neutral-300 w-full h-auto"
+        onMouseDown={startDrawing}
         onMouseUp={stopDrawing}
         onMouseLeave={stopDrawing}
-        onMouseMove={e => {
-          draw(e)
-        }}
-        height={500}
-        width={500}
-      ></canvas>
-      <button disabled={currentTool === "pen"} onClick={setPenTool}>
-        Pen
-      </button>
-      <button disabled={currentTool === "eraser"} onClick={setEraserTool}>
-        Eraser
-      </button>
-      <input type="range" min="1" max="40" value={lineWidth} onChange={e => setLineWidth(Number(e.target.value))} />
-      <input type="color" onChange={e => setColor(e.target.value)} />
+        onMouseMove={draw}
+      />
+      <div className="mt-4 flex items-center gap-2 flex-wrap">
+        <button disabled={currentTool === "pen"} onClick={setPenTool}>
+          Pen
+        </button>
+        <button disabled={currentTool === "eraser"} onClick={setEraserTool}>
+          Eraser
+        </button>
+        <input type="range" min="1" max="70" value={lineWidth} onChange={e => setLineWidth(Number(e.target.value))} />
+        <input type="color" value={color} onChange={e => setColor(e.target.value)} />
+      </div>
     </div>
   )
 }
