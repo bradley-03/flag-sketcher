@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react"
 export default function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const contextRef = useRef<CanvasRenderingContext2D | null>(null)
+  const abortControllerRef = useRef<AbortController>(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [lineWidth, setLineWidth] = useState(3)
   const [color, setColor] = useState("#000000")
@@ -82,6 +83,16 @@ export default function Canvas() {
     setCurrentTool("eraser")
   }
 
+  function handleMouseLeave() {
+    const controller = new AbortController()
+    abortControllerRef.current = controller
+
+    document.addEventListener("mouseup", stopDrawing, { signal: controller.signal })
+  }
+  function handleMouseEnter() {
+    abortControllerRef.current?.abort()
+  }
+
   return (
     <div className="w-full max-w-3xl mx-auto">
       <canvas
@@ -89,7 +100,8 @@ export default function Canvas() {
         className="bg-white cursor-crosshair rounded shadow border border-neutral-300 w-full h-auto"
         onMouseDown={startDrawing}
         onMouseUp={stopDrawing}
-        onMouseLeave={stopDrawing}
+        onMouseLeave={handleMouseLeave}
+        onMouseEnter={handleMouseEnter}
         onMouseMove={draw}
       />
       <div className="mt-4 flex items-center gap-2 flex-wrap">
