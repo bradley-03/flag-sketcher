@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react"
 export default function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const contextRef = useRef<CanvasRenderingContext2D | null>(null)
+  const didMount = useRef<boolean>(false)
   const abortControllerRef = useRef<AbortController>(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [lineWidth, setLineWidth] = useState(3)
@@ -33,16 +34,18 @@ export default function Canvas() {
     if (scaledCtx) {
       scaledCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
       contextRef.current = scaledCtx
+      contextRef.current.fillStyle = "white"
+      contextRef.current.fillRect(0, 0, canvas.width, canvas.height)
     }
 
-    // Restore content (basic version, does not scale image)
-    if (image) {
+    if (image && didMount.current) {
       scaledCtx?.putImageData(image, 0, 0)
     }
   }
 
   useEffect(() => {
     resizeCanvas()
+    didMount.current = true
     window.addEventListener("resize", resizeCanvas)
     return () => window.removeEventListener("resize", resizeCanvas)
   }, [])
@@ -97,7 +100,7 @@ export default function Canvas() {
     <div className="w-full max-w-3xl mx-auto">
       <canvas
         ref={canvasRef}
-        className="bg-white cursor-crosshair rounded shadow border border-neutral-300 w-full h-auto"
+        className=" cursor-crosshair rounded shadow border border-neutral-300 w-full h-auto"
         onMouseDown={startDrawing}
         onMouseUp={stopDrawing}
         onMouseLeave={handleMouseLeave}
