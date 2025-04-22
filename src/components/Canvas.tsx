@@ -59,7 +59,7 @@ export default function Canvas() {
     ctx.lineWidth = lineWidth
     ctx.lineCap = "round"
     ctx.lineJoin = "round"
-    ctx.strokeStyle = color
+    ctx.strokeStyle = currentTool === "pen" ? color : "white"
     ctx.moveTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
     ctx.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
     ctx.stroke()
@@ -77,12 +77,12 @@ export default function Canvas() {
   }
 
   function setPenTool() {
-    contextRef.current!.globalCompositeOperation = "source-over"
+    // contextRef.current!.globalCompositeOperation = "source-over"
     setCurrentTool("pen")
   }
 
   function setEraserTool() {
-    contextRef.current!.globalCompositeOperation = "destination-out"
+    // contextRef.current!.globalCompositeOperation = "destination-out"
     setCurrentTool("eraser")
   }
 
