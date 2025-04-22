@@ -4,6 +4,9 @@ export default function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const contextRef = useRef<CanvasRenderingContext2D | null>(null)
   const didMount = useRef<boolean>(false)
+  const undoStack = useRef<ImageData[]>([])
+  const redoStack = useRef<ImageData[]>([])
+  const [canUndoRedo, setCanUndoRedo] = useState({ undo: false, redo: false })
   const abortControllerRef = useRef<AbortController>(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [lineWidth, setLineWidth] = useState(3)
@@ -50,11 +53,24 @@ export default function Canvas() {
     return () => window.removeEventListener("resize", resizeCanvas)
   }, [])
 
+  function saveState() {
+    const canvas = canvasRef.current
+    const context = contextRef.current
+    if (!context || !canvas) return
+
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
+    undoStack.current.push(imageData)
+    redoStack.current = []
+
+    setCanUndoRedo({ redo: redoStack.current.length > 0, undo: undoStack.current.length > 0 })
+  }
+
   function startDrawing(event: React.MouseEvent<HTMLCanvasElement>) {
     const ctx = contextRef.current
     if (!ctx) return
 
     setIsDrawing(true)
+    saveState()
     ctx.beginPath()
     ctx.lineWidth = lineWidth
     ctx.lineCap = "round"
@@ -74,6 +90,34 @@ export default function Canvas() {
     if (!isDrawing || !contextRef.current) return
     contextRef.current.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
     contextRef.current.stroke()
+  }
+
+  function undo() {
+    const context = contextRef.current
+    const canvas = canvasRef.current
+    if (!context || !canvas || undoStack.current.length === 0) return
+
+    const currentState = context.getImageData(0, 0, canvas.width, canvas.height)
+    redoStack.current.push(currentState)
+
+    const previous = undoStack.current.pop()
+    if (previous) context.putImageData(previous, 0, 0)
+
+    setCanUndoRedo({ redo: redoStack.current.length > 0, undo: undoStack.current.length > 0 })
+  }
+
+  function redo() {
+    const context = contextRef.current
+    const canvas = canvasRef.current
+    if (!context || !canvas || redoStack.current.length === 0) return
+
+    const currentState = context.getImageData(0, 0, canvas.width, canvas.height)
+    undoStack.current.push(currentState)
+
+    const previous = redoStack.current.pop()
+    if (previous) context.putImageData(previous, 0, 0)
+
+    setCanUndoRedo({ redo: redoStack.current.length > 0, undo: undoStack.current.length > 0 })
   }
 
   function setPenTool() {
@@ -116,6 +160,12 @@ export default function Canvas() {
         </button>
         <input type="range" min="1" max="70" value={lineWidth} onChange={e => setLineWidth(Number(e.target.value))} />
         <input type="color" value={color} onChange={e => setColor(e.target.value)} />
+        <button disabled={!canUndoRedo["undo"]} onClick={undo}>
+          Undo
+        </button>
+        <button disabled={!canUndoRedo["redo"]} onClick={redo}>
+          Redo
+        </button>
       </div>
     </div>
   )
