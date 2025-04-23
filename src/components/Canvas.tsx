@@ -79,8 +79,6 @@ export default function Canvas() {
     ctx.moveTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
     ctx.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
     ctx.stroke()
-
-    console.log("start drawing")
   }
 
   function stopDrawing() {
@@ -137,11 +135,9 @@ export default function Canvas() {
     abortControllerRef.current = controller
 
     document.addEventListener("pointerup", stopDrawing, { signal: controller.signal })
-    console.log("created")
   }
   function handlePointerEnter() {
     abortControllerRef.current?.abort()
-    console.log("aborted")
   }
 
   return (
