@@ -65,7 +65,7 @@ export default function Canvas() {
     setCanUndoRedo({ redo: redoStack.current.length > 0, undo: undoStack.current.length > 0 })
   }
 
-  function startDrawing(event: React.MouseEvent<HTMLCanvasElement>) {
+  function startDrawing(event: React.PointerEvent<HTMLCanvasElement>) {
     const ctx = contextRef.current
     if (!ctx) return
 
@@ -79,6 +79,8 @@ export default function Canvas() {
     ctx.moveTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
     ctx.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
     ctx.stroke()
+
+    console.log("start drawing")
   }
 
   function stopDrawing() {
@@ -86,7 +88,7 @@ export default function Canvas() {
     contextRef.current?.closePath()
   }
 
-  function draw(event: React.MouseEvent<HTMLCanvasElement>) {
+  function draw(event: React.PointerEvent<HTMLCanvasElement>) {
     if (!isDrawing || !contextRef.current) return
     contextRef.current.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
     contextRef.current.stroke()
@@ -130,26 +132,28 @@ export default function Canvas() {
     setCurrentTool("eraser")
   }
 
-  function handleMouseLeave() {
+  function handlePointerLeave() {
     const controller = new AbortController()
     abortControllerRef.current = controller
 
-    document.addEventListener("mouseup", stopDrawing, { signal: controller.signal })
+    document.addEventListener("pointerup", stopDrawing, { signal: controller.signal })
+    console.log("created")
   }
-  function handleMouseEnter() {
+  function handlePointerEnter() {
     abortControllerRef.current?.abort()
+    console.log("aborted")
   }
 
   return (
     <div className="w-full max-w-3xl mx-auto">
       <canvas
         ref={canvasRef}
-        className=" cursor-crosshair rounded shadow border border-neutral-300 w-full h-auto"
-        onMouseDown={startDrawing}
-        onMouseUp={stopDrawing}
-        onMouseLeave={handleMouseLeave}
-        onMouseEnter={handleMouseEnter}
-        onMouseMove={draw}
+        className="cursor-crosshair rounded shadow border border-neutral-300 w-full h-auto touch-none"
+        onPointerDown={startDrawing}
+        onPointerUp={stopDrawing}
+        onPointerMove={draw}
+        onPointerLeave={handlePointerLeave}
+        onPointerEnter={handlePointerEnter}
       />
       <div className="mt-4 flex items-center gap-2 flex-wrap">
         <button disabled={currentTool === "pen"} onClick={setPenTool}>
