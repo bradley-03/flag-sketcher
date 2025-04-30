@@ -1,6 +1,6 @@
 import countryData from "../data/countryData.json"
 import { useState } from "react"
-import DrawingCanvas from "./components/DrawingCanvas"
+import DrawingCanvas from "./components/DrawingCanvas/DrawingCanvas"
 
 function getRandomCountryIndex(): number {
   return Math.floor(Math.random() * countryData.length)

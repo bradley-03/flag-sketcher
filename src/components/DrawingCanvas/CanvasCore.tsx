@@ -1,22 +1,28 @@
-import { RefObject, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
+import { Ref, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
+import { HexColor, Tools, UndoRedoState } from "./types"
 
-type CanvasCoreProps = {
-  ref: RefObject<unknown>
-  onUndoRedoChange: (newState: { redo: boolean; undo: boolean }) => void
+export type CanvasRefHandle = {
+  reset: () => void
+  undo: () => void
+  redo: () => void
 }
 
-export default function CanvasCore({ ref, onUndoRedoChange }: CanvasCoreProps) {
+type CanvasCoreProps = {
+  ref: Ref<CanvasRefHandle>
+  onUndoRedoChange: (newState: UndoRedoState) => void
+  lineWidth: number
+  color: HexColor
+  tool: Tools
+}
+
+export default function CanvasCore({ ref, onUndoRedoChange, lineWidth, color, tool }: CanvasCoreProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const contextRef = useRef<CanvasRenderingContext2D | null>(null)
   const didMount = useRef<boolean>(false)
   const undoStack = useRef<ImageData[]>([])
   const redoStack = useRef<ImageData[]>([])
-  const [canUndoRedo, setCanUndoRedo] = useState({ undo: false, redo: false })
   const abortControllerRef = useRef<AbortController>(null)
   const [isDrawing, setIsDrawing] = useState(false)
-  const [lineWidth, setLineWidth] = useState(3)
-  const [color, setColor] = useState("#000000")
-  const [currentTool, setCurrentTool] = useState("pen")
 
   function updateUndoRedoChange() {
     onUndoRedoChange({ redo: redoStack.current.length > 0, undo: undoStack.current.length > 0 })
@@ -44,7 +50,6 @@ export default function CanvasCore({ ref, onUndoRedoChange }: CanvasCoreProps) {
         if (previous) context.putImageData(previous, 0, 0)
 
         updateUndoRedoChange()
-        setCanUndoRedo({ redo: redoStack.current.length > 0, undo: undoStack.current.length > 0 })
       },
       redo() {
         const context = contextRef.current
@@ -58,7 +63,6 @@ export default function CanvasCore({ ref, onUndoRedoChange }: CanvasCoreProps) {
         if (previous) context.putImageData(previous, 0, 0)
 
         updateUndoRedoChange()
-        setCanUndoRedo({ redo: redoStack.current.length > 0, undo: undoStack.current.length > 0 })
       },
     }
   })
@@ -113,7 +117,6 @@ export default function CanvasCore({ ref, onUndoRedoChange }: CanvasCoreProps) {
     redoStack.current = []
 
     updateUndoRedoChange()
-    setCanUndoRedo({ redo: redoStack.current.length > 0, undo: undoStack.current.length > 0 })
   }
 
   function startDrawing(event: React.PointerEvent<HTMLCanvasElement>) {
@@ -126,7 +129,7 @@ export default function CanvasCore({ ref, onUndoRedoChange }: CanvasCoreProps) {
     ctx.lineWidth = lineWidth
     ctx.lineCap = "round"
     ctx.lineJoin = "round"
-    ctx.strokeStyle = currentTool === "pen" ? color : "white"
+    ctx.strokeStyle = tool === "pen" ? color : "white"
     ctx.moveTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
     ctx.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
     ctx.stroke()
@@ -141,16 +144,6 @@ export default function CanvasCore({ ref, onUndoRedoChange }: CanvasCoreProps) {
     if (!isDrawing || !contextRef.current) return
     contextRef.current.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
     contextRef.current.stroke()
-  }
-
-  function setPenTool() {
-    // contextRef.current!.globalCompositeOperation = "source-over"
-    setCurrentTool("pen")
-  }
-
-  function setEraserTool() {
-    // contextRef.current!.globalCompositeOperation = "destination-out"
-    setCurrentTool("eraser")
   }
 
   function handlePointerLeave() {
