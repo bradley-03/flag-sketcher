@@ -2,9 +2,10 @@ import { RefObject, useCallback, useEffect, useImperativeHandle, useRef, useStat
 
 type CanvasCoreProps = {
   ref: RefObject<unknown>
+  onUndoRedoChange: (newState: { redo: boolean; undo: boolean }) => void
 }
 
-export default function CanvasCore({ ref }: CanvasCoreProps) {
+export default function CanvasCore({ ref, onUndoRedoChange }: CanvasCoreProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const contextRef = useRef<CanvasRenderingContext2D | null>(null)
   const didMount = useRef<boolean>(false)
@@ -17,6 +18,10 @@ export default function CanvasCore({ ref }: CanvasCoreProps) {
   const [color, setColor] = useState("#000000")
   const [currentTool, setCurrentTool] = useState("pen")
 
+  function updateUndoRedoChange() {
+    onUndoRedoChange({ redo: redoStack.current.length > 0, undo: undoStack.current.length > 0 })
+  }
+
   useImperativeHandle(ref, () => {
     return {
       reset() {
@@ -26,6 +31,34 @@ export default function CanvasCore({ ref }: CanvasCoreProps) {
 
         ctx.fillStyle = "white"
         ctx.fillRect(0, 0, canvas.width, canvas.height)
+      },
+      undo() {
+        const context = contextRef.current
+        const canvas = canvasRef.current
+        if (!context || !canvas || undoStack.current.length === 0) return
+
+        const currentState = context.getImageData(0, 0, canvas.width, canvas.height)
+        redoStack.current.push(currentState)
+
+        const previous = undoStack.current.pop()
+        if (previous) context.putImageData(previous, 0, 0)
+
+        updateUndoRedoChange()
+        setCanUndoRedo({ redo: redoStack.current.length > 0, undo: undoStack.current.length > 0 })
+      },
+      redo() {
+        const context = contextRef.current
+        const canvas = canvasRef.current
+        if (!context || !canvas || redoStack.current.length === 0) return
+
+        const currentState = context.getImageData(0, 0, canvas.width, canvas.height)
+        undoStack.current.push(currentState)
+
+        const previous = redoStack.current.pop()
+        if (previous) context.putImageData(previous, 0, 0)
+
+        updateUndoRedoChange()
+        setCanUndoRedo({ redo: redoStack.current.length > 0, undo: undoStack.current.length > 0 })
       },
     }
   })
@@ -79,6 +112,7 @@ export default function CanvasCore({ ref }: CanvasCoreProps) {
     undoStack.current.push(imageData)
     redoStack.current = []
 
+    updateUndoRedoChange()
     setCanUndoRedo({ redo: redoStack.current.length > 0, undo: undoStack.current.length > 0 })
   }
 
@@ -107,34 +141,6 @@ export default function CanvasCore({ ref }: CanvasCoreProps) {
     if (!isDrawing || !contextRef.current) return
     contextRef.current.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
     contextRef.current.stroke()
-  }
-
-  function undo() {
-    const context = contextRef.current
-    const canvas = canvasRef.current
-    if (!context || !canvas || undoStack.current.length === 0) return
-
-    const currentState = context.getImageData(0, 0, canvas.width, canvas.height)
-    redoStack.current.push(currentState)
-
-    const previous = undoStack.current.pop()
-    if (previous) context.putImageData(previous, 0, 0)
-
-    setCanUndoRedo({ redo: redoStack.current.length > 0, undo: undoStack.current.length > 0 })
-  }
-
-  function redo() {
-    const context = contextRef.current
-    const canvas = canvasRef.current
-    if (!context || !canvas || redoStack.current.length === 0) return
-
-    const currentState = context.getImageData(0, 0, canvas.width, canvas.height)
-    undoStack.current.push(currentState)
-
-    const previous = redoStack.current.pop()
-    if (previous) context.putImageData(previous, 0, 0)
-
-    setCanUndoRedo({ redo: redoStack.current.length > 0, undo: undoStack.current.length > 0 })
   }
 
   function setPenTool() {
