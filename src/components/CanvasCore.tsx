@@ -1,6 +1,10 @@
-import { useEffect, useRef, useState } from "react"
+import { RefObject, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
 
-export default function Canvas() {
+type CanvasCoreProps = {
+  ref: RefObject<unknown>
+}
+
+export default function CanvasCore({ ref }: CanvasCoreProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const contextRef = useRef<CanvasRenderingContext2D | null>(null)
   const didMount = useRef<boolean>(false)
@@ -13,7 +17,20 @@ export default function Canvas() {
   const [color, setColor] = useState("#000000")
   const [currentTool, setCurrentTool] = useState("pen")
 
-  const resizeCanvas = () => {
+  useImperativeHandle(ref, () => {
+    return {
+      reset() {
+        const canvas = canvasRef.current
+        const ctx = contextRef.current
+        if (!canvas || !ctx) return
+
+        ctx.fillStyle = "white"
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+      },
+    }
+  })
+
+  const resizeCanvas = useCallback(() => {
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -25,7 +42,7 @@ export default function Canvas() {
     const aspectRatio = 3 / 2
     const height = width / aspectRatio
 
-    const ctx = canvas.getContext("2d")
+    const ctx = canvas.getContext("2d", { willReadFrequently: true })
     const image = ctx?.getImageData(0, 0, canvas.width, canvas.height)
 
     canvas.width = width * dpr
@@ -44,14 +61,14 @@ export default function Canvas() {
     if (image && didMount.current) {
       scaledCtx?.putImageData(image, 0, 0)
     }
-  }
+  }, [canvasRef])
 
   useEffect(() => {
     resizeCanvas()
     didMount.current = true
     window.addEventListener("resize", resizeCanvas)
     return () => window.removeEventListener("resize", resizeCanvas)
-  }, [])
+  }, [resizeCanvas])
 
   function saveState() {
     const canvas = canvasRef.current
@@ -141,32 +158,14 @@ export default function Canvas() {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      <canvas
-        ref={canvasRef}
-        className="cursor-crosshair rounded shadow border border-neutral-300 w-full h-auto touch-none"
-        onPointerDown={startDrawing}
-        onPointerUp={stopDrawing}
-        onPointerMove={draw}
-        onPointerLeave={handlePointerLeave}
-        onPointerEnter={handlePointerEnter}
-      />
-      <div className="mt-4 flex items-center gap-2 flex-wrap">
-        <button disabled={currentTool === "pen"} onClick={setPenTool}>
-          Pen
-        </button>
-        <button disabled={currentTool === "eraser"} onClick={setEraserTool}>
-          Eraser
-        </button>
-        <input type="range" min="1" max="70" value={lineWidth} onChange={e => setLineWidth(Number(e.target.value))} />
-        <input type="color" value={color} onChange={e => setColor(e.target.value)} />
-        <button disabled={!canUndoRedo["undo"]} onClick={undo}>
-          Undo
-        </button>
-        <button disabled={!canUndoRedo["redo"]} onClick={redo}>
-          Redo
-        </button>
-      </div>
-    </div>
+    <canvas
+      ref={canvasRef}
+      className="cursor-crosshair rounded shadow border border-neutral-300 w-full h-auto touch-none"
+      onPointerDown={startDrawing}
+      onPointerUp={stopDrawing}
+      onPointerMove={draw}
+      onPointerLeave={handlePointerLeave}
+      onPointerEnter={handlePointerEnter}
+    />
   )
 }

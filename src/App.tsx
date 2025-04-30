@@ -1,6 +1,6 @@
 import countryData from "../data/countryData.json"
 import { useState } from "react"
-import Canvas from "./components/Canvas"
+import DrawingCanvas from "./components/DrawingCanvas"
 
 function getRandomCountryIndex(): number {
   return Math.floor(Math.random() * countryData.length)
@@ -25,7 +25,7 @@ function App() {
         <img src={country.flags.png} alt={country.flags.alt} />
       </div> */}
       <div className="flex w-full h-screen justify-center items-center">
-        <Canvas />
+        <DrawingCanvas />
       </div>
     </>
   )
