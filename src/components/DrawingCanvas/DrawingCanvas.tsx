@@ -1,8 +1,12 @@
-import { useRef, useState } from "react"
+import { Ref, useImperativeHandle, useRef, useState } from "react"
 import { HexColor, Tools, UndoRedoState } from "./types"
 import CanvasCore, { CanvasRefHandle } from "./CanvasCore"
 
-export default function DrawingCanvas() {
+type DrawingCanvasProps = {
+  ref: Ref<CanvasRefHandle>
+}
+
+export default function DrawingCanvas({ ref }: DrawingCanvasProps) {
   const canvasRef = useRef<CanvasRefHandle>(null)
   const [canUndoRedo, setCanUndoRedo] = useState<UndoRedoState>({ undo: false, redo: false })
   const [color, setColor] = useState<HexColor>("#00000")
@@ -18,6 +22,15 @@ export default function DrawingCanvas() {
   function handleRedo() {
     canvasRef.current?.redo()
   }
+
+  // expose methods again for higher usage
+  useImperativeHandle(ref, () => {
+    return {
+      reset: handleReset,
+      undo: handleUndo,
+      redo: handleRedo,
+    }
+  })
 
   function handleUndoRedoChange(newState: { redo: boolean; undo: boolean }) {
     setCanUndoRedo(newState)
