@@ -9,7 +9,7 @@ type DrawingCanvasProps = {
 export default function DrawingCanvas({ ref }: DrawingCanvasProps) {
   const canvasRef = useRef<CanvasRefHandle>(null)
   const [canUndoRedo, setCanUndoRedo] = useState<UndoRedoState>({ undo: false, redo: false })
-  const [color, setColor] = useState<HexColor>("#00000")
+  const [color, setColor] = useState<HexColor>("#000000")
   const [lineWidth, setLineWidth] = useState<number>(3)
   const [tool, setTool] = useState<Tools>("pen")
 
