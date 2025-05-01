@@ -37,6 +37,9 @@ export default function CanvasCore({ ref, onUndoRedoChange, lineWidth, color, to
 
         ctx.fillStyle = "white"
         ctx.fillRect(0, 0, canvas.width, canvas.height)
+        redoStack.current = []
+        undoStack.current = []
+        updateUndoRedoChange()
       },
       undo() {
         const context = contextRef.current
