@@ -1,6 +1,7 @@
 import { Ref, useImperativeHandle, useRef, useState } from "react"
 import { HexColor, Tools, UndoRedoState } from "./types"
 import CanvasCore, { CanvasRefHandle } from "./CanvasCore"
+import { FaPaintBrush, FaEraser, FaUndo, FaRedo, FaTrash } from "react-icons/fa"
 
 type DrawingCanvasProps = {
   ref: Ref<CanvasRefHandle>
@@ -37,7 +38,7 @@ export default function DrawingCanvas({ ref }: DrawingCanvasProps) {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto lg:flex justify-center">
+    <div className="w-full max-w-3xl mx-auto">
       <CanvasCore
         ref={canvasRef}
         onUndoRedoChange={handleUndoRedoChange}
@@ -45,22 +46,24 @@ export default function DrawingCanvas({ ref }: DrawingCanvasProps) {
         tool={tool}
         lineWidth={lineWidth}
       />
-      <div className="mt-4 lg:mt-0 flex items-center gap-2 flex-wrap bg-white">
+      <div className="mt-4 flex items-center justify-center gap-2 flex-wrap bg-white shadow rounded border border-neutral-300 p-2">
         <button disabled={tool === "pen"} onClick={() => setTool("pen")}>
-          Pen
+          <FaPaintBrush />
         </button>
         <button disabled={tool === "eraser"} onClick={() => setTool("eraser")}>
-          Eraser
+          <FaEraser />
         </button>
         <input type="range" min="1" max="70" value={lineWidth} onChange={e => setLineWidth(Number(e.target.value))} />
         <input type="color" value={color} onChange={e => setColor(e.target.value as HexColor)} />
         <button onClick={handleUndo} disabled={!canUndoRedo["undo"]}>
-          Undo
+          <FaUndo />
         </button>
         <button onClick={handleRedo} disabled={!canUndoRedo["redo"]}>
-          Redo
+          <FaRedo />
         </button>
-        <button onClick={handleReset}>Reset</button>
+        <button onClick={handleReset}>
+          <FaTrash />
+        </button>
       </div>
     </div>
   )
