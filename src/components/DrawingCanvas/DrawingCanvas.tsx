@@ -1,7 +1,6 @@
 import { Ref, useImperativeHandle, useRef, useState } from "react"
 import { HexColor, Tools, UndoRedoState } from "./types"
 import CanvasCore, { CanvasRefHandle } from "./CanvasCore"
-import ColorPicker from "../ColorPicker/ColorPicker"
 
 type DrawingCanvasProps = {
   ref: Ref<CanvasRefHandle>
@@ -38,7 +37,7 @@ export default function DrawingCanvas({ ref }: DrawingCanvasProps) {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
+    <div className="w-full max-w-3xl mx-auto lg:flex justify-center">
       <CanvasCore
         ref={canvasRef}
         onUndoRedoChange={handleUndoRedoChange}
@@ -46,7 +45,7 @@ export default function DrawingCanvas({ ref }: DrawingCanvasProps) {
         tool={tool}
         lineWidth={lineWidth}
       />
-      <div className="mt-4 flex items-center gap-2 flex-wrap">
+      <div className="mt-4 lg:mt-0 flex items-center gap-2 flex-wrap bg-white">
         <button disabled={tool === "pen"} onClick={() => setTool("pen")}>
           Pen
         </button>
@@ -54,8 +53,7 @@ export default function DrawingCanvas({ ref }: DrawingCanvasProps) {
           Eraser
         </button>
         <input type="range" min="1" max="70" value={lineWidth} onChange={e => setLineWidth(Number(e.target.value))} />
-        {/* <input type="color" value={color} onChange={e => setColor(e.target.value as HexColor)} /> */}
-        <ColorPicker onChange={newColor => setColor(newColor)} color={color} />
+        <input type="color" value={color} onChange={e => setColor(e.target.value as HexColor)} />
         <button onClick={handleUndo} disabled={!canUndoRedo["undo"]}>
           Undo
         </button>
