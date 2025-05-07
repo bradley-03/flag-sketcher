@@ -25,6 +25,9 @@ export default function DrawingCanvas({ ref }: DrawingCanvasProps) {
   function handleRedo() {
     canvasRef.current?.redo()
   }
+  function handleImgExport() {
+    return canvasRef.current?.exportImg() ?? null
+  }
 
   // expose methods again for higher usage
   useImperativeHandle(ref, () => {
@@ -32,6 +35,7 @@ export default function DrawingCanvas({ ref }: DrawingCanvasProps) {
       reset: handleReset,
       undo: handleUndo,
       redo: handleRedo,
+      exportImg: handleImgExport,
     }
   })
 

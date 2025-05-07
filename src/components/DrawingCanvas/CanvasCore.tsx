@@ -5,6 +5,7 @@ export type CanvasRefHandle = {
   reset: () => void
   undo: () => void
   redo: () => void
+  exportImg: () => string | null
 }
 
 type CanvasCoreProps = {
@@ -66,6 +67,11 @@ export default function CanvasCore({ ref, onUndoRedoChange, lineWidth, color, to
         if (previous) context.putImageData(previous, 0, 0)
 
         updateUndoRedoChange()
+      },
+      exportImg() {
+        const canvas = canvasRef.current
+        if (!canvas) return null
+        return canvas.toDataURL("image/png")
       },
     }
   })
