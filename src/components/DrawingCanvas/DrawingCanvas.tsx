@@ -89,7 +89,6 @@ export default function DrawingCanvas({ ref }: DrawingCanvasProps) {
         <input
           data-tooltip-id="tooltip"
           data-tooltip-content={"Brush Color"}
-          className="rounded-lg cursor-pointer"
           type="color"
           value={color}
           onChange={e => setColor(e.target.value as HexColor)}

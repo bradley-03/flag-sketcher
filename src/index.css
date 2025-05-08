@@ -27,9 +27,30 @@ h1 {
   line-height: 1.1;
 }
 
+input[type="color"] {
+  border-radius: 50%;
+  inline-size: 2rem;
+  block-size: 2rem;
+  cursor: pointer;
+  /* padding: 3px; */
+  /* border-width: 1px;
+  border-style: solid;
+  border-color: rgb(153, 153, 153); */
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border-radius: 50%;
+}
+
+input[type="color"]::-moz-color-swatch {
+  border-radius: 50%;
+}
 
 body {
-
   background: repeating-linear-gradient(45deg,
       #ffffff,
       #ffffff 10px,
