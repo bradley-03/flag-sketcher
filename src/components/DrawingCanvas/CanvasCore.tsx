@@ -5,7 +5,7 @@ export type CanvasRefHandle = {
   reset: () => void
   undo: () => void
   redo: () => void
-  exportImg: () => string | null
+  exportImg: () => Base64URLString | null
 }
 
 type CanvasCoreProps = {
