@@ -18,7 +18,6 @@ export async function getImageAspectRatio(image: Buffer | string): Promise<numbe
   try {
     const img = await Jimp.read(image)
     const { width, height } = img.bitmap
-    console.log("Width:", width, "Height:", height)
 
     return width / height
   } catch (error) {
