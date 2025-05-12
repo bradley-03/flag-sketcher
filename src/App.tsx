@@ -1,9 +1,9 @@
 import countryData from "../data/countryData.json"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import DrawingCanvas from "./components/DrawingCanvas/DrawingCanvas"
 import { CanvasRefHandle } from "./components/DrawingCanvas/CanvasCore"
 import Button from "./components/Button"
-import { compareImages } from "./util/compareImages"
+import { compareImages, getImageAspectRatio } from "./util/compareImages"
 
 function getRandomCountryIndex(): number {
   return Math.floor(Math.random() * countryData.length)
@@ -11,10 +11,13 @@ function getRandomCountryIndex(): number {
 
 function App() {
   const [randomCountryIndex, setRandomCountryIndex] = useState<number>(getRandomCountryIndex())
+  const [flagAspect, setFlagAspect] = useState<number>(3 / 2)
   const canvasRef = useRef<CanvasRefHandle>(null)
 
-  function rollNewCountry() {
-    setRandomCountryIndex(getRandomCountryIndex())
+  async function rollNewCountry() {
+    const newCountryIndex = getRandomCountryIndex()
+    setRandomCountryIndex(newCountryIndex)
+
     canvasRef.current?.reset()
   }
 
@@ -26,6 +29,15 @@ function App() {
     compareImages(imgBase64, country.flags.png)
   }
 
+  // Calculate new aspect ratio when the flag changes
+  useEffect(() => {
+    async function resizeCanvas() {
+      const newFlagAspect = await getImageAspectRatio(countryData[randomCountryIndex].flags.png)
+      setFlagAspect(newFlagAspect)
+    }
+    resizeCanvas()
+  }, [randomCountryIndex])
+
   return (
     <>
       <div className="flex flex-col w-full justify-center items-center gap-3 mt-5">
@@ -33,7 +45,7 @@ function App() {
         <h1>{country.name.common}</h1>
 
         <Button onClick={exportTest}>Test Button</Button>
-        <DrawingCanvas ref={canvasRef} />
+        <DrawingCanvas ref={canvasRef} aspectRatio={flagAspect} />
       </div>
     </>
   )

@@ -14,6 +14,19 @@ async function resizeImageToPNGBuffer(buffer: Buffer, width: number, height: num
   return await image.getBuffer("image/png")
 }
 
+export async function getImageAspectRatio(image: Buffer | string): Promise<number> {
+  try {
+    const img = await Jimp.read(image)
+    const { width, height } = img.bitmap
+    console.log("Width:", width, "Height:", height)
+
+    return width / height
+  } catch (error) {
+    console.error("Error reading image:", error)
+    return 3 / 2
+  }
+}
+
 export async function compareImages(drawnImage: Base64URLString, flagImage: string) {
   const bufferedDrawnImage = dataURLToBuffer(drawnImage)
   const resizedDrawnImageBuffer = await resizeImageToPNGBuffer(bufferedDrawnImage, 256, 160)

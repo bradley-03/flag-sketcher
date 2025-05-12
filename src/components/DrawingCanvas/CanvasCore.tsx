@@ -94,7 +94,6 @@ export default function CanvasCore({
     const dpr = window.devicePixelRatio || 1
     const width = parent.clientWidth
 
-    // TODO: match this aspect ratio to the flag
     const height = width / aspectRatio
 
     const ctx = canvas.getContext("2d", { willReadFrequently: true })
@@ -116,7 +115,7 @@ export default function CanvasCore({
     if (image && didMount.current) {
       scaledCtx?.putImageData(image, 0, 0)
     }
-  }, [canvasRef])
+  }, [canvasRef, aspectRatio])
 
   useEffect(() => {
     resizeCanvas()
