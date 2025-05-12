@@ -14,9 +14,17 @@ type CanvasCoreProps = {
   lineWidth: number
   color: HexColor
   tool: Tools
+  aspectRatio?: number
 }
 
-export default function CanvasCore({ ref, onUndoRedoChange, lineWidth, color, tool }: CanvasCoreProps) {
+export default function CanvasCore({
+  ref,
+  onUndoRedoChange,
+  lineWidth,
+  color,
+  tool,
+  aspectRatio = 3 / 2,
+}: CanvasCoreProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const contextRef = useRef<CanvasRenderingContext2D | null>(null)
   const didMount = useRef<boolean>(false)
@@ -85,7 +93,8 @@ export default function CanvasCore({ ref, onUndoRedoChange, lineWidth, color, to
 
     const dpr = window.devicePixelRatio || 1
     const width = parent.clientWidth
-    const aspectRatio = 3 / 2
+
+    // TODO: match this aspect ratio to the flag
     const height = width / aspectRatio
 
     const ctx = canvas.getContext("2d", { willReadFrequently: true })

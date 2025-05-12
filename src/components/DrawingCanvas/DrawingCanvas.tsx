@@ -7,9 +7,10 @@ import { Tooltip } from "react-tooltip"
 
 type DrawingCanvasProps = {
   ref: Ref<CanvasRefHandle>
+  aspectRatio?: number
 }
 
-export default function DrawingCanvas({ ref }: DrawingCanvasProps) {
+export default function DrawingCanvas({ ref, aspectRatio }: DrawingCanvasProps) {
   const canvasRef = useRef<CanvasRefHandle>(null)
   const [canUndoRedo, setCanUndoRedo] = useState<UndoRedoState>({ undo: false, redo: false })
   const [color, setColor] = useState<HexColor>("#000000")
@@ -51,6 +52,7 @@ export default function DrawingCanvas({ ref }: DrawingCanvasProps) {
         color={color}
         tool={tool}
         lineWidth={lineWidth}
+        aspectRatio={aspectRatio}
       />
       <div className="mt-4 flex items-center justify-center gap-2 flex-wrap bg-white shadow rounded-xl border border-neutral-300 p-2">
         <Tooltip delayShow={400} id="tooltip"></Tooltip>
