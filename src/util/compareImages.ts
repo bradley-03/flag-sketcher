@@ -26,25 +26,33 @@ export async function getImageAspectRatio(image: Buffer | string): Promise<numbe
   }
 }
 
-export async function compareImages(drawnImage: Base64URLString, flagImage: string) {
-  const bufferedDrawnImage = dataURLToBuffer(drawnImage)
-  const resizedDrawnImageBuffer = await resizeImageToPNGBuffer(bufferedDrawnImage, 256, 160)
-  const drawnPng = PNG.sync.read(resizedDrawnImageBuffer)
+export async function compareImages(
+  drawnImage: Base64URLString,
+  flagImage: string
+): Promise<{ accuracy: number; numDiffPixels: number }> {
+  try {
+    const response = await fetch(flagImage)
+    const arrayBufferedFlagImage = await response.arrayBuffer()
+    const bufferedFlagImage = Buffer.from(arrayBufferedFlagImage)
+    const flagPng = PNG.sync.read(bufferedFlagImage)
 
-  const response = await fetch(flagImage)
-  const arrayBufferedFlagImage = await response.arrayBuffer()
-  const bufferedFlagImage = Buffer.from(arrayBufferedFlagImage)
-  const resizedFlagImageBuffer = await resizeImageToPNGBuffer(bufferedFlagImage, 256, 160)
-  const flagPng = PNG.sync.read(resizedFlagImageBuffer)
+    const bufferedDrawnImage = dataURLToBuffer(drawnImage)
+    // Resize canvas image to match flag image size
+    const resizedDrawnImageBuffer = await resizeImageToPNGBuffer(bufferedDrawnImage, flagPng.width, flagPng.height)
+    const drawnPng = PNG.sync.read(resizedDrawnImageBuffer)
 
-  const diff = new PNG({ width: 256, height: 160 })
+    const diff = new PNG({ width: flagPng.width, height: flagPng.height })
 
-  const numDiffPixels = pixelmatch(drawnPng.data, flagPng.data, diff.data, 256, 160, { threshold: 0.5 })
+    const numDiffPixels = pixelmatch(drawnPng.data, flagPng.data, diff.data, flagPng.width, flagPng.height, {
+      threshold: 0.5,
+    })
 
-  const totalPixels = 256 * 160
-  const accuracy = 1 - numDiffPixels / totalPixels
+    const totalPixels = flagPng.width * flagPng.height
+    const accuracy = (1 - numDiffPixels / totalPixels) * 100
 
-  console.log(accuracy)
-
-  return { accuracy, numDiffPixels }
+    return { accuracy, numDiffPixels }
+  } catch (e) {
+    console.error("Error comparing images: ", e)
+    return { accuracy: 0, numDiffPixels: 0 }
+  }
 }
