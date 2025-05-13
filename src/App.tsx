@@ -48,6 +48,7 @@ function App() {
         accuracy,
       },
     ])
+    rollNewCountry()
   }
 
   // Calculate new aspect ratio when the flag changes
@@ -65,7 +66,7 @@ function App() {
         <button onClick={rollNewCountry}>New Country</button>
         <h1>{country.name.common}</h1>
 
-        <Button onClick={exportTest}>Test Button</Button>
+        <Button onClick={exportTest}>Done</Button>
         <DrawingCanvas ref={canvasRef} aspectRatio={flagAspect} />
       </div>
 
