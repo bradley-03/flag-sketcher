@@ -33,7 +33,7 @@ function App() {
 
   const country = countryData[randomCountryIndex]
 
-  async function exportTest() {
+  async function finishDrawing() {
     const imgBase64 = canvasRef.current?.exportImg()
     if (!imgBase64) return
     const { accuracy } = await compareImages(imgBase64, country.flags.png)
@@ -61,29 +61,34 @@ function App() {
   }, [randomCountryIndex])
 
   return (
-    <>
-      <div className="flex flex-col w-full justify-center items-center gap-3 mt-5">
-        <button onClick={rollNewCountry}>New Country</button>
+    <div className="flex flex-col w-full justify-center items-center text-center">
+      <div className="flex flex-col w-full max-w-2xl justify-center items-center gap-3 mt-5">
         <h1>{country.name.common}</h1>
 
-        <Button onClick={exportTest}>Done</Button>
+        <div className="flex flex-row gap-2">
+          <Button onClick={finishDrawing}>Done</Button>
+          <Button variant="secondary" onClick={rollNewCountry}>
+            Skip Country
+          </Button>
+        </div>
+
         <DrawingCanvas ref={canvasRef} aspectRatio={flagAspect} />
       </div>
 
       <div className="flex flex-col w-full justify-center items-center gap-3 mt-5">
-        <h2>Game History</h2>
+        <h2 className="text-2xl">Game History</h2>
         {gameHistory.map((game, index) => (
           <div key={index} className="flex flex-col items-center">
             <h2 className="font-bold">{game.country.name}</h2>
             <p className="font-semibold">Accuracy: {game.accuracy.toFixed(2)}%</p>
             <div className="flex flex-row gap-2">
-              <img src={game.country.flag} alt={`${game.country.name} flag`} />
+              <img src={game.country.flag} alt={`${game.country.name} flag`} className="w-[20rem]" />
               <img src={game.userDrawing} alt={`${game.country.name} flag`} className="w-[20rem]" />
             </div>
           </div>
         ))}
       </div>
-    </>
+    </div>
   )
 }
 

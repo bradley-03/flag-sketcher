@@ -45,7 +45,7 @@ export default function DrawingCanvas({ ref, aspectRatio }: DrawingCanvasProps) 
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
+    <div className="w-full mx-auto">
       <CanvasCore
         ref={canvasRef}
         onUndoRedoChange={handleUndoRedoChange}
