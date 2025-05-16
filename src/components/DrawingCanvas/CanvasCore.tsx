@@ -137,6 +137,8 @@ export default function CanvasCore({
   }
 
   function startDrawing(event: React.PointerEvent<HTMLCanvasElement>) {
+    if (event.pointerType === "touch" && event.nativeEvent.isPrimary === false) return
+
     const ctx = contextRef.current
     if (!ctx) return
 
@@ -158,6 +160,7 @@ export default function CanvasCore({
   }
 
   function draw(event: React.PointerEvent<HTMLCanvasElement>) {
+    if (event.pointerType === "touch" && event.nativeEvent.isPrimary === false) return
     if (!isDrawing || !contextRef.current) return
     contextRef.current.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY)
     contextRef.current.stroke()
@@ -176,7 +179,7 @@ export default function CanvasCore({
   return (
     <canvas
       ref={canvasRef}
-      className="cursor-crosshair rounded shadow border border-neutral-300 w-full h-auto touch-none"
+      className="cursor-crosshair rounded shadow border border-neutral-300 w-full h-auto touch-pinch-zoom"
       onPointerDown={startDrawing}
       onPointerUp={stopDrawing}
       onPointerMove={draw}
