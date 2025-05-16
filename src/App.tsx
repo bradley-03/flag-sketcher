@@ -14,8 +14,8 @@ export type GameHistory = {
     name: string
     flag: string
   }
-  userDrawing: string
-  accuracy: number
+  userDrawing: string | null
+  accuracy: number | null
 }
 
 function getRandomCountryIndex(): number {
@@ -55,6 +55,21 @@ function App() {
     rollNewCountry()
   }
 
+  function handleSkip() {
+    setGameHistory(prev => [
+      ...prev,
+      {
+        country: {
+          name: country.name.common,
+          flag: country.flags.png,
+        },
+        userDrawing: null,
+        accuracy: null,
+      },
+    ])
+    rollNewCountry()
+  }
+
   // Calculate new aspect ratio when the flag changes
   useEffect(() => {
     async function resizeCanvas() {
@@ -71,7 +86,7 @@ function App() {
 
         <div className="flex flex-row gap-2">
           <Button onClick={finishDrawing}>Done</Button>
-          <Button variant="secondary" onClick={rollNewCountry}>
+          <Button variant="secondary" onClick={handleSkip}>
             Skip Country
           </Button>
         </div>
