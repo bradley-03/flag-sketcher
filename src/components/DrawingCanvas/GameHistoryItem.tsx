@@ -4,26 +4,22 @@ type GameHistoryItemProps = {
   game: GameHistory
 }
 
+function FlagImg({ src, alt }: { src: string; alt: string }) {
+  return (
+    <div className="flex justify-center">
+      <img src={src} alt={alt} className="max-w-[20rem] w-full h-auto object-contain rounded shadow" />
+    </div>
+  )
+}
+
 export default function GameHistoryItem({ game }: GameHistoryItemProps) {
   return (
     <div className="flex flex-col items-center w-full">
       <h2 className="font-bold">{game.country.name}</h2>
       <p className="font-semibold">Accuracy: {game.accuracy.toFixed(2)}%</p>
       <div className="flex gap-2">
-        <div className="flex justify-center">
-          <img
-            src={game.country.flag}
-            alt={`${game.country.name} flag`}
-            className="max-w-[20rem] w-full h-auto object-contain rounded"
-          />
-        </div>
-        <div className="flex justify-center">
-          <img
-            src={game.userDrawing}
-            alt={`${game.country.name} flag`}
-            className="max-w-[20rem] w-full h-auto object-contain rounded"
-          />
-        </div>
+        <FlagImg src={game.country.flag} alt={`${game.country.name} flag`} />
+        <FlagImg src={game.userDrawing} alt={`${game.country.name} drawn flag`} />
       </div>
     </div>
   )

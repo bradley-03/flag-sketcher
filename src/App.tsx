@@ -5,6 +5,7 @@ import { CanvasRefHandle } from "./components/DrawingCanvas/CanvasCore"
 import Button from "./components/Button"
 import { compareImages, getImageAspectRatio } from "./util/compareImages"
 import GameHistoryItem from "./components/DrawingCanvas/GameHistoryItem"
+import { FaGithub } from "react-icons/fa"
 
 export type GameHistory = {
   country: {
@@ -76,11 +77,22 @@ function App() {
         <DrawingCanvas ref={canvasRef} aspectRatio={flagAspect} />
       </div>
 
-      <div className="flex flex-col w-full max-w-2xl justify-center items-center gap-3 mt-5">
-        <h2 className="text-2xl">Game History</h2>
+      <div className="flex flex-col w-full max-w-2xl justify-center items-center gap-3 mt-5 mb-5">
+        <h2 className="text-3xl">Game History</h2>
         {gameHistory.map((game, index) => (
           <GameHistoryItem key={index} game={game} />
         ))}
+      </div>
+
+      <div className="flex flex-col w-full max-w-2xl justify-center items-center mt-5 mb-5">
+        <p className="text-neutral-600">Made with ❤️</p>
+        <a
+          target="_blank"
+          className="text-black hover:underline flex gap-1 items-center"
+          href="https://github.com/bradley-03/flag-sketcher"
+        >
+          <FaGithub /> Github
+        </a>
       </div>
     </div>
   )
