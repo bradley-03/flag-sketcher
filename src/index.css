@@ -2,9 +2,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* font-family: system-ui, Avenir, Helvetica, Arial, sans-serif; */
-  font-family: "Mulish", sans-serif;
-
+  font-family: "Ancizar Serif", serif;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -46,4 +44,10 @@ body {
       #ffffff 10px,
       #eeeeee 10px,
       #eeeeee 20px);
+}
+
+body {
+  background-color: #fffdee;
+  background-image: radial-gradient(#ccd5ae 0.5px, #fffdee 0.5px);
+  background-size: 10px 10px;
 }
