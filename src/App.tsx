@@ -80,7 +80,7 @@ function App() {
   }, [randomCountryIndex])
 
   return (
-    <div className="flex flex-col w-full justify-center items-center text-center my-4">
+    <div className="flex flex-col w-full justify-center items-center text-center my-4 text-[#283618]">
       <div className="flex flex-col w-full max-w-2xl justify-center items-center gap-3 mt-5">
         <h1 className="font-bold">{country.name.common}</h1>
 
