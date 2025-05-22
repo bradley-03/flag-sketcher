@@ -4,10 +4,11 @@ import DrawingCanvas from "./components/DrawingCanvas/DrawingCanvas"
 import { CanvasRefHandle } from "./components/DrawingCanvas/CanvasCore"
 import Button from "./components/Button"
 import { compareImages, getImageAspectRatio } from "./util/compareImages"
-import GameHistoryItem from "./components/DrawingCanvas/GameHistoryItem"
+import GameHistoryItem from "./components/GameHistoryItem"
 import { FaGithub } from "react-icons/fa"
 import { RxCross1 } from "react-icons/rx"
 import { Tooltip } from "react-tooltip"
+import Modal from "./components/Modal"
 
 export type GameHistory = {
   country: {
@@ -27,6 +28,7 @@ function App() {
   const [flagAspect, setFlagAspect] = useState<number>(3 / 2)
   const canvasRef = useRef<CanvasRefHandle>(null)
   const [gameHistory, setGameHistory] = useState<GameHistory[]>([])
+  const [finishedModal, setFinishedModal] = useState<boolean>(false)
 
   async function rollNewCountry() {
     const newCountryIndex = getRandomCountryIndex()
@@ -53,6 +55,7 @@ function App() {
       },
     ])
     rollNewCountry()
+    setFinishedModal(true)
   }
 
   function handleSkip() {
@@ -81,6 +84,16 @@ function App() {
 
   return (
     <div className="flex flex-col w-full justify-center items-center text-center my-4 text-[#283618]">
+      <Modal isOpen={finishedModal} onClose={() => setFinishedModal(false)} title="Complete">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-xl font-semibold">You finished drawing!</h2>
+          <p className="text-neutral-600">
+            Your accuracy: {gameHistory[gameHistory.length - 1]?.accuracy?.toFixed(2)}%
+          </p>
+          <Button onClick={() => setFinishedModal(false)}>Close</Button>
+        </div>
+      </Modal>
+
       <div className="flex flex-col w-full max-w-2xl justify-center items-center gap-3 mt-5">
         <h1 className="font-bold">{country.name.common}</h1>
 

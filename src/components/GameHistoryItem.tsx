@@ -1,4 +1,4 @@
-import { GameHistory } from "../../App"
+import { GameHistory } from "../App"
 
 type GameHistoryItemProps = {
   game: GameHistory
