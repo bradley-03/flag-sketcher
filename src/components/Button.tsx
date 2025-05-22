@@ -11,9 +11,9 @@ const baseButtonStyles =
 
 const variantStyles = {
   primary:
-    "dark:bg-white dark:text-black dark:enabled:hover:bg-neutral-300 bg-black text-white hover:enabled:bg-neutral-800 dark:disabled:bg-neutral-300 dark:disabled:text-neutral-600 disabled:bg-neutral-600 disabled:text-neutral-300",
+    "dark:bg-white dark:text-black dark:enabled:hover:bg-neutral-300 bg-[#3a5a40] text-white hover:enabled:bg-[#588157] dark:disabled:bg-neutral-300 dark:disabled:text-neutral-600 disabled:bg-neutral-600 disabled:text-neutral-300",
   secondary:
-    "dark:bg-neutral-800 dark:hover:enabled:bg-neutral-700 dark:text-white bg-neutral-200 hover:enabled:bg-neutral-100 text-neutral-950 dark:disabled:bg-neutral-700 dark:disabled:text-neutral-300 disabled:bg-neutral-200 disabled:text-neutral-600",
+    "dark:bg-neutral-800 dark:hover:enabled:bg-neutral-700 dark:text-white bg-[#e9edc9] hover:enabled:bg-[#eff2d9] text-neutral-950 dark:disabled:bg-neutral-700 dark:disabled:text-neutral-300 disabled:bg-neutral-200 disabled:text-neutral-600",
   outline:
     "dark:bg-black dark:text-white bg-white text-black border-1 dark:border-neutral-600 dark:hover:enabled:bg-neutral-600 border-neutral-300 hover:enabled:bg-neutral-300 shadow-sm dark:disabled:text-neutral-500 disabled:text-neutral-600",
   danger:
