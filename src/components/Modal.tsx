@@ -24,7 +24,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
       onMouseDown={handleMouseDown}
     >
       <div
-        className="dark:bg-black dark:border-1 dark:border-neutral-600 dark:text-white bg-[#fffdee] text-black p-6 rounded-lg shadow-lg w-2/5 overflow-y-auto max-h-[90vh]"
+        className="dotsBg dark:bg-black dark:border-1 dark:border-neutral-600 dark:text-white text-black p-6 rounded-md shadow-lg w-2/5 overflow-y-auto max-h-[90vh]"
         // onMouseDown={e => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">

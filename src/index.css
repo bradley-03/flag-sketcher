@@ -38,15 +38,7 @@ input[type="color"]::-moz-color-swatch {
   border-radius: 50%;
 }
 
-body {
-  background: repeating-linear-gradient(45deg,
-      #ffffff,
-      #ffffff 10px,
-      #eeeeee 10px,
-      #eeeeee 20px);
-}
-
-body {
+.dotsBg {
   background-color: #fffdee;
   background-image: radial-gradient(#ccd5ae 0.5px, #fffdee 0.5px);
   background-size: 10px 10px;

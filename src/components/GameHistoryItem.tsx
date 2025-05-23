@@ -4,7 +4,7 @@ type GameHistoryItemProps = {
   game: GameHistory
 }
 
-function FlagImg({ src, alt }: { src: string; alt: string }) {
+export function FlagImg({ src, alt }: { src: string; alt: string }) {
   return (
     <div className="flex justify-center">
       <img src={src} alt={alt} className="max-w-[19rem] w-full h-auto object-contain rounded shadow" />
