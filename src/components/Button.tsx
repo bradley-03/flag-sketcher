@@ -20,7 +20,7 @@ const variantStyles = {
     "dark:bg-red-800 dark:hover:enabled:bg-red-700 bg-red-700 hover:enabled:bg-red-600 text-white dark:disabled:bg-red-400 dark:disabled:text-neutral-200 disabled:bg-red-400 disabled:text-neutral-200",
   link: "bg-none border-none dark:text-white hover:enabled:underline shadow-none text-black dark:disabled:text-neutral-500 disabled:text-neutral-600",
   ghost:
-    "shadow-none bg-none dark:enabled:hover:bg-neutral-800 dark:text-white text-black enabled:hover:bg-neutral-300 disabled:text-neutral-600 dark:disabled:text-neutral-500",
+    "shadow-none bg-none dark:enabled:hover:bg-neutral-800/50 dark:text-white text-black enabled:hover:bg-neutral-300/50 disabled:text-neutral-600 dark:disabled:text-neutral-500",
 }
 
 const sizeStyles = {
