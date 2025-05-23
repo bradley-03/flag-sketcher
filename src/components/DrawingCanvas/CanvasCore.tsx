@@ -43,9 +43,14 @@ export default function CanvasCore({
         const canvas = canvasRef.current
         const ctx = contextRef.current
         if (!canvas || !ctx) return
+        const parent = canvas.parentElement
+        if (!parent) return
+
+        const width = parent.clientWidth
+        const height = width / aspectRatio
 
         ctx.fillStyle = "white"
-        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        ctx.fillRect(0, 0, width, height)
         redoStack.current = []
         undoStack.current = []
         updateUndoRedoChange()
@@ -109,7 +114,7 @@ export default function CanvasCore({
       scaledCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
       contextRef.current = scaledCtx
       contextRef.current.fillStyle = "white"
-      contextRef.current.fillRect(0, 0, canvas.width, canvas.height)
+      contextRef.current.fillRect(0, 0, width, height)
     }
 
     if (image && didMount.current) {
