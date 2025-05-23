@@ -8,8 +8,7 @@ import GameHistoryItem from "./components/GameHistoryItem"
 import { FaGithub } from "react-icons/fa"
 import { RxCross1 } from "react-icons/rx"
 import { Tooltip } from "react-tooltip"
-import Modal from "./components/Modal"
-import { FlagImg } from "./components/GameHistoryItem"
+import GameCompleteModal from "./components/GameCompleteModal"
 
 export type GameHistory = {
   country: {
@@ -85,26 +84,13 @@ function App() {
 
   return (
     <div className="flex flex-col w-full justify-center items-center text-center my-4 text-[#283618]">
-      <Modal isOpen={finishedModal} onClose={() => setFinishedModal(false)} title="Complete!">
-        <div className="flex gap-2 items-center justify-center">
-          <div className="flex flex-col gap-1">
-            <FlagImg src={gameHistory[gameHistory.length - 1]?.country.flag} alt="Country Flag" />
-            <h2 className="text-center">{gameHistory[gameHistory.length - 1]?.country.name} Flag</h2>
-          </div>
-          <div className="flex flex-col gap-1">
-            <FlagImg src={gameHistory[gameHistory.length - 1]?.userDrawing} alt="Your Flag" />
-            <h2 className="text-center">Your drawing</h2>
-          </div>
-        </div>
-        <p className="my-3 text-center">
-          Your accuracy: <span className="font-bold">{gameHistory[gameHistory.length - 1]?.accuracy?.toFixed(2)}%</span>
-        </p>
-        <div className="flex justify-end gap-2">
-          <Button onClick={() => setFinishedModal(false)}>Close</Button>
-        </div>
-      </Modal>
-
       <div className="flex flex-col w-full max-w-2xl justify-center items-center gap-3 mt-5">
+        <GameCompleteModal
+          isOpen={finishedModal}
+          onClose={() => setFinishedModal(false)}
+          game={gameHistory[gameHistory.length - 1]}
+        />
+
         <h1 className="font-bold">{country.name.common}</h1>
 
         <div className="flex flex-row gap-2">
