@@ -54,7 +54,7 @@ function App() {
         accuracy,
       },
     ])
-    rollNewCountry()
+    // rollNewCountry()
     setFinishedModal(true)
   }
 
@@ -70,6 +70,11 @@ function App() {
         accuracy: null,
       },
     ])
+    setFinishedModal(true)
+  }
+
+  function handleModalClose() {
+    setFinishedModal(false)
     rollNewCountry()
   }
 
@@ -87,7 +92,7 @@ function App() {
       <div className="flex flex-col w-full max-w-2xl justify-center items-center gap-3 mt-5">
         <GameCompleteModal
           isOpen={finishedModal}
-          onClose={() => setFinishedModal(false)}
+          onClose={handleModalClose}
           game={gameHistory[gameHistory.length - 1]}
         />
 
@@ -111,9 +116,12 @@ function App() {
             <RxCross1 />
           </Button>
         </div>
-        {gameHistory.map((game, index) => (
-          <GameHistoryItem key={index} game={game} />
-        ))}
+        {gameHistory
+          .slice(0)
+          .reverse()
+          .map((game, index) => (
+            <GameHistoryItem key={index} game={game} />
+          ))}
       </div>
 
       <div className="flex flex-col w-full max-w-2xl justify-center items-center mt-5 mb-5">
