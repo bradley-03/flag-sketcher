@@ -9,6 +9,7 @@ import { FaGithub } from "react-icons/fa"
 import { RxCross1 } from "react-icons/rx"
 import { Tooltip } from "react-tooltip"
 import GameCompleteModal from "./components/GameCompleteModal"
+import { motion } from "motion/react"
 
 export type GameHistory = {
   country: {
@@ -96,7 +97,9 @@ function App() {
           game={gameHistory[gameHistory.length - 1]}
         />
 
-        <h1 className="font-bold">{country.name.common}</h1>
+        <motion.h1 key={country.name.common} initial={{ scale: 0.7 }} animate={{ scale: 1 }} className="font-bold">
+          {country.name.common}
+        </motion.h1>
 
         <div className="flex flex-row gap-2">
           <Button onClick={finishDrawing}>Done</Button>
